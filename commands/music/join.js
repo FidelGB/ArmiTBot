@@ -1,11 +1,12 @@
 const Discord = require('discord.js');
 
 /**
-     * @param {Array} params - Parametros del comando
-     * @param {Discord.Message} message - Datos del mensaje
-     * @param {Discord.VoiceConnection} connection - Conexión al chat de voz
+ * @param {Array} params - Parametros del comando
+ * @param {Discord.Message} message - Datos del mensaje
+ * @param {Discord.VoiceConnection} connection - Conexión al chat de voz
+ * @returns {Discord.VoiceConnection} - Conexión modificada del chat de voz
 */
-let join = async (message, connection) => {
+const join = async (message, connection) => {
     if(connection == null){
         if(message.member.voice.channel){
             return await message.member.voice.channel.join();

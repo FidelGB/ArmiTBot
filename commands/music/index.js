@@ -6,7 +6,7 @@ const { leave } = require('./leave.js');
  * @param {Array} params - Parametros del comando
  * @param {Discord.Message} message - Datos del mensaje
  */
- let music = async (params, message) => {
+ const music = async (params, message) => {
     command = params[0];
     params = params.slice(1);
     switch(command){
