@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
 const Discord = require('discord.js');
-const music = require('./commands/music.js');
+const { music } = require('./commands/music/index.js');
 const client = new Discord.Client();
 
 dotenv.config();
