@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 const Discord = require('discord.js');
+const music = require('./commands/music.js');
 const client = new Discord.Client();
 
 dotenv.config();
@@ -13,8 +14,9 @@ client.on('message', message => {
         let fullCommand = message.content.substring(1).trim().split(" ");
         let command = fullCommand[0];
         let params = fullCommand.slice(1)
-        message.channel.send(`${message.author} comando activado: ${command}`);
-        message.channel.send(`parametros del comando: ${params}`)
+        switch(command){
+            case 'music': music(params, message); break;
+        }
     };
 });
 
