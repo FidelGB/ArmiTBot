@@ -10,7 +10,7 @@ const leave = (message, connection) => {
     if(connection != null){   
         connection.disconnect();
         message.react('🆗');
-        return null;
+        return false;
     }else{
         message.channel.send(`${message.member} no estoy en un canal de voz`)
         return connection;

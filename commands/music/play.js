@@ -48,7 +48,7 @@ const skipSong = async(message, connection) => {
             if(this.cola.length > 0){
                 await play(this.cola[0], message, connection);
                 this.cola.shift();
-                message.react('🆗');
+                message.react('⏭');
             }else{
                 message.channel.send(`${message.author} no hay mas canciones en la cola`);
             }
@@ -74,26 +74,26 @@ const deleteQueue = () => {
  */
 const play = async (cancion, message, connection) => {
     
-    if(cancion?.url == null){
-        cancion = (await getResultsYoutube(`v=${cancion.videoId}`)).all[0];
-    }
-    
-    if(connection == null){
-        
+    if(!connection){
         connection = await join(message, connection);
     }
     
-    connection.play(ytdl(cancion.url, {filter: 'audioonly', quality: 'highestaudio'})).on('finish', () => {
-        this.cola.shift();
-        if(this.cola.length > 0){
-            play(this.cola[0], message, connection);
-        }else{
-            this.speaking = false;
-            this.cola = null;
+    if(connection){
+        if(cancion?.url == null){
+            cancion = (await getResultsYoutube(`v=${cancion.videoId}`)).all[0];
         }
-    })
-    this.speaking = true;
-    message.channel.send(`Reproduciendo: ${cancion.title} (Por: ${message.author})`);
+        connection.play(ytdl(cancion.url, {filter: 'audioonly', quality: 'highestaudio'})).on('finish', () => {
+            this.cola.shift();
+            if(this.cola.length > 0){
+                play(this.cola[0], message, connection);
+            }else{
+                this.speaking = false;
+                this.cola = null;
+            }
+        })
+        this.speaking = true;
+        message.channel.send(`Reproduciendo: ${cancion.title} (Por: ${message.author})`);
+    }
     return connection;
 }
 

@@ -7,16 +7,16 @@ const Discord = require('discord.js');
  * @returns {Discord.VoiceConnection} - Conexión modificada del chat de voz
 */
 const join = async (message, connection) => {
-    if(connection == null){
+    if(!connection){
         if(message.member.voice.channel){
             return await message.member.voice.channel.join();
         }else{
             message.channel.send(`${message.author} necesitas estar en un canal de voz`);
-            return connection;
+            return false;
         }
     }else{
         message.channel.send(`${message.author} actualmente estoy sirviendo en el canal de ${connection.channel.name}`)
-        return connection;
+        return false;
     }
 }
 
