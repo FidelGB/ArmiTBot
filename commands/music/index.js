@@ -1,8 +1,9 @@
 const Discord = require('discord.js');
 const { join } = require('./join.js');
 const { leave } = require('./leave.js');
-const { play } = require('./play.js');
+const { addCola } = require('./play.js');
 const { deleteQueue } = require('./play.js');
+const { skipSong } = require('./play.js');
 
 /**
  * @param {Array} params - Parametros del comando
@@ -14,7 +15,8 @@ const { deleteQueue } = require('./play.js');
     switch(command){
         case 'join': this.connection = await join(message, this.connection); break;
         case 'leave': this.connection = leave(message, this.connection); deleteQueue(); break;
-        case 'play': this.connection = await play(params, message, this.connection); break;
+        case 'play': this.connection = await addCola(params, message, this.connection); break;
+        case 'skip': await skipSong(message, this.connection); break;
     }
 };
 

@@ -9,7 +9,7 @@ const {getResultsYoutube} = require('../helper.js');
  * @param {Discord.VoiceConnection} connection - Conexión al chat de voz
  * @returns {Discord.VoiceConnection} - Conexión modificada del chat de voz
  */
-const play = async (params, message, connection) => {
+const addCola = async (params, message, connection) => {
     let search = params.join(" ").trim();
     if(params.length != ""){
         let results = (await getResultsYoutube(search));
@@ -27,13 +27,36 @@ const play = async (params, message, connection) => {
                 message.channel.send(`Agregadas ${results.all.length} canciones a la cola (Por: ${message.author})`);
             }
             if(!this.speaking){
-                connection = await sonarCancion(this.cola[0], message, connection);
+                connection = await play(this.cola[0], message, connection);
+                this.cola.shift();
             }
             results = null;
         }
         return connection;
     }else{
-        message.channel.send("Parametros invalidos")
+        message.channel.play("Parametros invalidos")
+    }
+}
+
+/**
+ * @param {Discord.Message} message - Datos del mesaje  
+ * @param {Discord.VoiceConnection} connection - Conexión al chat de voz
+ */
+const skipSong = async(message, connection) => {
+    if(connection != null){
+        if(this.cola != null){
+            if(this.cola.length > 0){
+                await play(this.cola[0], message, connection);
+                this.cola.shift();
+                message.react('🆗');
+            }else{
+                message.channel.send(`${message.author} no hay mas canciones en la cola`);
+            }
+        }else{
+            message.channel.send(`${message.author} no hay ninguna canción en la cola`);
+        }
+    }else{
+        message.channel.send(`${message.author} no estoy conectado a ningun canal de voz`);
     }
 }
 
@@ -49,7 +72,7 @@ const deleteQueue = () => {
  * @param {Discord.VoiceConnection} connection - Conexión al chat de voz
  * @returns {Discord.VoiceConnection} - Conexión modificada del chat de voz 
  */
-const sonarCancion = async (cancion, message, connection) => {
+const play = async (cancion, message, connection) => {
     
     if(cancion?.url == null){
         cancion = (await getResultsYoutube(`v=${cancion.videoId}`)).all[0];
@@ -63,7 +86,7 @@ const sonarCancion = async (cancion, message, connection) => {
     connection.play(ytdl(cancion.url, {filter: 'audioonly', quality: 'highestaudio'})).on('finish', () => {
         this.cola.shift();
         if(this.cola.length > 0){
-            sonarCancion(this.cola[0], message, connection);
+            play(this.cola[0], message, connection);
         }else{
             this.speaking = false;
             this.cola = null;
@@ -75,6 +98,7 @@ const sonarCancion = async (cancion, message, connection) => {
 }
 
 module.exports = {
-    play: play,
-    deleteQueue: deleteQueue
+    addCola: addCola,
+    deleteQueue: deleteQueue,
+    skipSong: skipSong
 }
