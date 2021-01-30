@@ -4,8 +4,9 @@ const Discord = require('discord.js');
  * @param {Array<String>} params - Parametros del comando
  * @param {Discord.Message} message - Datos del mensaje
  * @param {Discord.VoiceConnection} connection - Conexión al chat de voz
+ * @returns {Promise<Discord.VoiceConnection>} - Conexión modificada del chat de voz
  */
-let leave = (message, connection) => {
+const leave = (message, connection) => {
     if(connection != null){   
         connection.disconnect();
         message.react('🆗');
