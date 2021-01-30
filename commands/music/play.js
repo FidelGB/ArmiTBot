@@ -19,21 +19,18 @@ const play = async (params, message, connection) => {
             if(this.cola == null || this.cola.length == 0){
                 this.cola = results.all;
             }else{
-                this.cola.push(results.all);
+                this.cola.push(results.all[0]);
             }
-            if((results.all.length == 1 && this.cola.length > 1) || (connection?.speaking && results.all.length == 1)){
+            if((results.all.length == 1 && this.cola.length > 1) || (this.speaking && results.all.length == 1)){
                 message.channel.send(`Agregada "${results.all[0].title}" a la cola (Por: ${message.author})`);
             }else if(results.all.length > 1){
                 message.channel.send(`Agregadas ${results.all.length} canciones a la cola (Por: ${message.author})`);
             }
-            if(!connection?.speaking){
+            if(!this.speaking){
                 connection = await sonarCancion(this.cola[0], message, connection);
-                this.cola.shift();
             }
             results = null;
         }
-        console.log("Cola:");
-        console.log(this.cola);
         return connection;
     }else{
         message.channel.send("Parametros invalidos")
@@ -41,6 +38,7 @@ const play = async (params, message, connection) => {
 }
 
 const deleteQueue = () => {
+    this.speaking = false;
     this.cola = null;
 }
 
@@ -52,18 +50,27 @@ const deleteQueue = () => {
  * @returns {Discord.VoiceConnection} - Conexión modificada del chat de voz 
  */
 const sonarCancion = async (cancion, message, connection) => {
+    
     if(cancion?.url == null){
         cancion = (await getResultsYoutube(`v=${cancion.videoId}`)).all[0];
     }
-
+    
     if(connection == null){
-
+        
         connection = await join(message, connection);
     }
-
-    connection.play(ytdl(cancion.url, {filter: 'audioonly', quality: 'highestaudio'}));
-    message.channel.send(`Reproduciendo: ${cancion.title}`);
     
+    connection.play(ytdl(cancion.url, {filter: 'audioonly', quality: 'highestaudio'})).on('finish', () => {
+        this.cola.shift();
+        if(this.cola.length > 0){
+            sonarCancion(this.cola[0], message, connection);
+        }else{
+            this.speaking = false;
+            this.cola = null;
+        }
+    })
+    this.speaking = true;
+    message.channel.send(`Reproduciendo: ${cancion.title} (Por: ${message.author})`);
     return connection;
 }
 
