@@ -119,12 +119,12 @@ const play = async (cancion, message, connection) => {
         this.stream = connection.play(ytdl(cancion.url, {filter: 'audioonly', quality: 'highestaudio'})).on('finish', () => {
             if(this.cola.length > 0){
                 play(this.cola[0], message, connection);
+                this.cola.shift();
             }else{
                 this.speaking = false;
                 this.cola = null;
                 this.stream = null;
             }
-            this.cola.shift();
         })
         this.speaking = true;
         message.channel.send(`Reproduciendo: ${cancion.title} (Por: ${message.author})`);
