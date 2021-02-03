@@ -117,7 +117,6 @@ const play = async (cancion, message, connection) => {
             cancion = (await getResultsYoutube(`v=${cancion.videoId}`)).all[0];
         }
         this.stream = connection.play(ytdl(cancion.url, {filter: 'audioonly', quality: 'highestaudio'})).on('finish', () => {
-            this.cola.shift();
             if(this.cola.length > 0){
                 play(this.cola[0], message, connection);
             }else{
@@ -125,6 +124,7 @@ const play = async (cancion, message, connection) => {
                 this.cola = null;
                 this.stream = null;
             }
+            this.cola.shift();
         })
         this.speaking = true;
         message.channel.send(`Reproduciendo: ${cancion.title} (Por: ${message.author})`);
