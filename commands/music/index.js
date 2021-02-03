@@ -4,6 +4,9 @@ const { leave } = require('./leave.js');
 const { addCola } = require('./play.js');
 const { deleteQueue } = require('./play.js');
 const { skipSong } = require('./play.js');
+const { pause } = require('./play.js');
+const { resume } = require('./play.js');
+
 
 /**
  * @param {Array} params - Parametros del comando
@@ -17,6 +20,8 @@ const { skipSong } = require('./play.js');
         case 'leave': this.connection = leave(message, this.connection); deleteQueue(); break;
         case 'play': this.connection = await addCola(params, message, this.connection); break;
         case 'skip': await skipSong(message, this.connection); break;
+        case 'pause': pause(message, this.connection); break;
+        case 'resume': resume(message, this.connection); break;
     }
 };
 
