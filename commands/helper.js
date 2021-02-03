@@ -7,7 +7,15 @@ const getResultsYoutube = async url => {
     try {
         let videosRegex = "v=([a-zA-Z0-9\_\-]+)&?";
         let listRegex = "list=([a-zA-Z0-9\-\_]+)&?"
-        if(url.match(videosRegex)){
+        if(url.match(listRegex)){
+            let listaId = url.match(listRegex)[0].substring(5);
+            
+            let result = await yts({ listId: listaId });
+            return {
+                all: result.videos
+            };
+        }
+        else if(url.match(videosRegex)){
             let videoId = url.match(videosRegex)[0].substring(2);
             
             let result = {
@@ -15,14 +23,6 @@ const getResultsYoutube = async url => {
             }
             result.all.push(await yts({ videoId: videoId }));
             return result;
-        }
-        else if(url.match(listRegex)){
-            let listaId = url.match(listRegex)[0].substring(5);
-            
-            let result = await yts({ listId: listaId });
-            return {
-                all: result.videos
-            };
         }
         else
         {
